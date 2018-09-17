@@ -217,14 +217,3 @@ class BiDisagreements():
         plt.ylabel("Label")
         plt.xlabel("Label")
         plt.show()
-
-
-if __name__ == "__main__":
-    test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
-                        "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-                        "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
-    df = pd.DataFrame(test_annotations)
-    labels = [0, 1, 2, 3] # Note that you don't need to specify the presence of None labels
-
-    bidis = BiDisagreements(df, labels)
-    bidis.agreements_summary()
