@@ -1,28 +1,5 @@
 """
-Example
--------
->>> import pandas as pd
->>> from agree.visualisation import BiDisagreements
->>>
->>> agreements = pd.DataFrame({"olly": [0, 1, None, 3], "rob": [0, 1, 1, 3], "cal": [0, 1, 2, 3]})
->>> labels = [0, 1, 2, 3]
->>>
->>> bidis = BiDisagreements(agreements, labels)
->>> bidis.agreements_summary()
-Number of instances with:
-=========================
-No disagreement: 3
-Bidisagreement: 1
-Tridisagreement: 0
-More disagreements: 0
->>>
->>> bidisagreement_matrix = bidis.agree_matrix()
->>> bidis.visualise(title="Example matrix")
->>> print(bidisagreement_matrix)
-[[0. 0. 0. 0.]
- [0. 0. 1. 0.]
- [0. 1. 0. 0.]
- [0. 0. 0. 0.]]
+See Jupyter notebooks for example usage
 """
 import numpy as np
 import pandas as pd

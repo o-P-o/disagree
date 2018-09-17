@@ -1,55 +1,5 @@
 """
-Example
--------
->>> import pandas as pd
->>> from metrics import Metrics
->>> from metrics import Krippendorff
->>>
->>> anns = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
-...             "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-...             "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
->>>
->>> df = pd.DataFrame(anns)
->>> labels = [0, 1, 2, 3]
->>>
->>> mets = Metrics(df, labels)
->>> kripp = Krippendorff(df, labels)
-100%|███████████████████████████████████████████████████████████████████████| 4/4 [00:00<00:00, 864.80it/s]
->>>
->>> ann1 = "a"
->>> ann2 = "b"
->>>
->>> joint_prob = mets.joint_probability(ann1, ann2)
->>> cohens_kappa = mets.cohens_kappa(ann1, ann2)
->>> fleiss_kappa = mets.fleiss_kappa()
->>> pearson_corr = mets.correlation(ann1, ann2, "pearson")
->>> kendall_corr = mets.correlation(ann1, ann2, "kendall")
->>> spearman_corr = mets.correlation(ann1, ann2, "spearman")
->>> kripps_alpha = kripp.alpha(data_type="nominal")
->>>
->>> print("Joint probability between a and b: {:.2f}".format(joint_prob))
-Joint probability between a and b: 0.67
->>>
->>> print("Fleiss kappa: {:.2f}".format(fleiss_kappa))
-Fleiss kappa: -0.31
->>>
->>> print("Cohens kappa between a and b: {:.2f}".format(cohens_kappa))
-Cohens kappa between a and b: 0.66
->>>
->>> print("Pearsons correlation between a and b: {:.2f}".format(pearson_corr[0]))
-Pearsons correlation between a and b: 0.76
->>>
->>> print("Kendalls correlation between a and b: {:.2f}".format(kendall_corr[0]))
-Kendalls correlation between a and b: 0.82
->>>
->>> print("Spearman correlation between a and b: {:.2f}".format(spearman_corr[0]))
-Spearmans correlation between a and b: 0.87
->>>
->>> print("Krippendorff's alpha: {:.2f}".format(kripps_alpha))
-Krippendorff's alpha: 0.69
->>>
->>> # Visualising cohens kappa
->>> mets.visualise_metric(mets.cohens_kappa)
+See Jupyter notebooks for example usage
 """
 
 import numpy as np
