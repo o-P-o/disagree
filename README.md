@@ -14,7 +14,8 @@ Whilst working in NLP, I've been repeatedly working with datasets that have been
 
 * Visualisations
   * Ability to visualise bidisagreements between annotators
-  * Retrieve summaries of number of cases with no disagreements, bidisagreements, tridisagreements, and more
+  * Ability to visualise agreement statistics
+  * Retrieve summaries of numbers of disagreements and their extent
 
 * Annotation statistics:
   * Joint probability
@@ -25,63 +26,13 @@ Whilst working in NLP, I've been repeatedly working with datasets that have been
 
 ## Python examples
 
-These examples can be found at the top of the respective source codes as well.
-
-The first example demonstrates agree visualisations:
-
-```
-from annotations.visualisation import BiDisagreements
-from annotations.metrics import Metrics, Krippendorff
-import pandas as pd
-
-agreements = pd.DataFrame({"olly": [0, 1, None, 3], "rob": [0, 1, 1, 3], "cal": [0, 1, 2, 3]})
-labels = [0, 1, 2, 3]
-
-bidis = BiDisagreements(agreements, labels)
-bidis.agreements_summary()
-# This would show a summary of agreements
-
-bidisagreement_matrix = bidis.agree_matrix()
-bidis.visualise(title="Example matrix")
-print(bidisagreement_matrix)
-
-[[0. 0. 0. 0.]
- [0. 0. 1. 0.]
- [0. 1. 0. 0.]
- [0. 0. 0. 0.]]
-```
-
-This second example demonstrates the use of statistical metrics for assessing agreements:
-
-```
-
-anns = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
-        "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-        "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
-
-df = pd.DataFrame(anns)
-labels = [0, 1, 2, 3]
-
-mets = Metrics(df, labels)
-kripp = Krippendorff(df, labels)
-
-ann1 = "a"
-ann2 = "b"
-
-joint_prob = joint_probability(ann1, ann2)
-cohens_kappa = mets.cohens_kappa(ann1, ann2)
-fleiss_kappa = mets.fleiss_kappa()
-pearson_corr = mets.correlation(ann1, ann2, "pearson")
-kendall_corr = mets.correlation(ann1, ann2, "kendall")
-spearman_corr = mets.correlation(ann1, ann2, "spearman")
-kripps_alpha = kripp.alpha(data_type="nominal")
-```
+Partial examples can be found at the top of the source code. Worked examples are also provided in the Jupyter notebooks.
 
 ## Documentation
 
-### **annotations.visualisation.BiDisagreements(df, labels)**
+### **annotations.agreements.BiDisagreements(df, labels)**
 
-BiDisagreements are primarily there for you to visualise the disagreements in the form of a matix.
+`BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
 
 There are some quite strict requirements with regards to the parameters here. (See usage example in notebooks or top of source code.)
 
@@ -90,6 +41,7 @@ There are some quite strict requirements with regards to the parameters here. (S
   * ***Columns***: Annotators
   * Element [i, j] is annotator j's label for data instance i.
   * Entries must be integers, floats, or pandas nan values
+  * The lowest label must be 0. E.g. if your labels are 1-5, convert them to 0-4. 
 
 * `labels`: list containing possible labels
   * Must be from 0 to the maximum label. If your labels are words then please convert them to corresponding integers.
@@ -97,13 +49,15 @@ There are some quite strict requirements with regards to the parameters here. (S
 
 * **Attributes**:
   * **`agreements_summary()`**
-    * This will print out statistics on the number of instances with no disagreements, the number of bidisagreements, the number of tridisagreements, and the number of instances with worse cases (i.e. 4+ disagreements).
-  * **`agree_matrix()`**
-    * This will return a matrix of bidisagreements. Do with this what you will!
-  * **`visualise(cmap, normalise, title)`**
-    * Parameter: cmap, string -- The cmaps colour you would like in the matrix visualisation (see matplotlib)
-    * Parameter: normalise, boolean -- If True, normalise the disagreement counts. If False, present absolute disagreement counts
-    * Parameter: title, string -- Title for the disagreements matrix
+    * This will print out statistics on the number of instances with no disagreements, the number of bidisagreements, the number of tridisagreements, and the number of instances with worse cases (i.e. 3+ disagreements).
+  * **`agreements_matrix()`**
+    * This will return a matrix of bidisagreements. Do with this what you will! 
+    * Element [i, j] is the number of times there is a bidisagreement involving label i and label j.
+  * **`visualise(cmap="Reds", normalise=True, title="Bidisagreements")`**
+    * Used to visualise the agreements_matrix described above. 
+    * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
+    * Parameter: normalise, boolean, optional -- If True, normalise the disagreement counts. If False, present absolute disagreement counts
+    * Parameter: title, string, optional -- Title for the disagreements matrix
 
 ### **annotations.metrics.Metrics(df, labels)**
 
@@ -124,21 +78,28 @@ See above for df and labels args.
   * **`fliess_kappa()`**
     * No args
 
-  * **`correlation(ann1, ann2, measure)`**
+  * **`correlation(ann1, ann2, measure="pearson")`**
     * Parameter: ann1, string, name of one of the annotators from the DataFrame columns
     * Parameter: ann2, string, name of one of the annotators from the DataFrame columns
-    * Paramater: measure, string
-      * Options: (pearson, kendall, spearman)
+    * Paramater: measure, string, optional
+      * Options: (pearson (default), kendall, spearman)
     * This gives you either pearson , kendall, or spearman correlation statistics between two annotators
+    
+  * **visualise_metric(func, cmap="Blues", title="")**
+    * Returns a matrix of size (num_annotators x num_annotators). Element [i, j] is the statistic value for agreements between annotator i and annotator j. 
+    * Parameter: func, name of function for the metric you want to visualise.
+      * Options: (metrics.Metrics.cohens_kappa, metrics.Metrics.joint_probability)
+    * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
+    * Parameter: title, string, optional -- Title for the disagreements matrix
 
 ### **agree.metrics.Krippendorff(df, labels)**
 
 See above for df and labels args.
 
 * **Attributes**
-  * **`alpha(data_type)`**
-    * In this library, Krippendorff's alphs can handle four data types, one of which must be specified:
-      * Nominal (assumed)
-      * Ordinal
-      * Interval
-      * Ratio
+  * **`alpha(data_type="nominal")`**
+    * In this library, Krippendorff's alpha can handle four data types, one of which must be specified:
+      * nominal (default)
+      * ordinal
+      * interval
+      * ratio
