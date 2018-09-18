@@ -6,7 +6,11 @@ import pandas as pd
 import sys
 import math
 import itertools
+
+import matplotlib
+matplotlib.use('PS')
 import matplotlib.pyplot as plt
+
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
 DATAFRAME_TYPES_ERROR = "DataFrame entries must be int types, float types, or NaN"

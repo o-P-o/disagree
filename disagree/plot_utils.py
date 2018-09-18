@@ -1,6 +1,9 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+
+import matplotlib
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
 
 
 def matrix_plot(cm, labels, cmap, title):
