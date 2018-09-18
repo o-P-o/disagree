@@ -4,7 +4,9 @@ This library aims to address annotation disagreements in manually labelled data.
 
 ## Install
 
-To install, do: ...
+To install, setup a virtualenv and do:
+
+`python3 -m pip install --index-url https://pypi.org/project/ disagree`
 
 ## Background
 
