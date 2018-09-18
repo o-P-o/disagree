@@ -1,4 +1,4 @@
-# annotations
+# disagree - Assessing annotator disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
 
@@ -30,7 +30,7 @@ Partial examples can be found at the top of the source code. Worked examples are
 
 ## Documentation
 
-### **annotations.agreements.BiDisagreements(df, labels)**
+### **disagree.agreements.BiDisagreements(df, labels)**
 
 `BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
 
@@ -41,7 +41,7 @@ There are some quite strict requirements with regards to the parameters here. (S
   * ***Columns***: Annotators
   * Element [i, j] is annotator j's label for data instance i.
   * Entries must be integers, floats, or pandas nan values
-  * The lowest label must be 0. E.g. if your labels are 1-5, convert them to 0-4. 
+  * The lowest label must be 0. E.g. if your labels are 1-5, convert them to 0-4.
 
 * `labels`: list containing possible labels
   * Must be from 0 to the maximum label. If your labels are words then please convert them to corresponding integers.
@@ -51,15 +51,15 @@ There are some quite strict requirements with regards to the parameters here. (S
   * **`agreements_summary()`**
     * This will print out statistics on the number of instances with no disagreements, the number of bidisagreements, the number of tridisagreements, and the number of instances with worse cases (i.e. 3+ disagreements).
   * **`agreements_matrix()`**
-    * This will return a matrix of bidisagreements. Do with this what you will! 
+    * This will return a matrix of bidisagreements. Do with this what you will!
     * Element [i, j] is the number of times there is a bidisagreement involving label i and label j.
   * **`visualise(cmap="Reds", normalise=True, title="Bidisagreements")`**
-    * Used to visualise the agreements_matrix described above. 
+    * Used to visualise the agreements_matrix described above.
     * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
     * Parameter: normalise, boolean, optional -- If True, normalise the disagreement counts. If False, present absolute disagreement counts
     * Parameter: title, string, optional -- Title for the disagreements matrix
 
-### **annotations.metrics.Metrics(df, labels)**
+### **disagree.metrics.Metrics(df, labels)**
 
 This module gives you access to a number of metrics typically used for annotation disagreement statistics.
 
@@ -84,15 +84,15 @@ See above for df and labels args.
     * Paramater: measure, string, optional
       * Options: (pearson (default), kendall, spearman)
     * This gives you either pearson , kendall, or spearman correlation statistics between two annotators
-    
+
   * **visualise_metric(func, cmap="Blues", title="")**
-    * Returns a matrix of size (num_annotators x num_annotators). Element [i, j] is the statistic value for agreements between annotator i and annotator j. 
+    * Returns a matrix of size (num_annotators x num_annotators). Element [i, j] is the statistic value for agreements between annotator i and annotator j.
     * Parameter: func, name of function for the metric you want to visualise.
       * Options: (metrics.Metrics.cohens_kappa, metrics.Metrics.joint_probability)
     * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
     * Parameter: title, string, optional -- Title for the disagreements matrix
 
-### **agree.metrics.Krippendorff(df, labels)**
+### **disagree.metrics.Krippendorff(df, labels)**
 
 See above for df and labels args.
 
