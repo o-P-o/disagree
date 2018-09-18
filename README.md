@@ -8,6 +8,14 @@ To install, setup a virtualenv and do:
 
 `$ python3 -m pip install --index-url https://pypi.org/project/ disagree`
 
+or
+
+`$ pip3 install disagree`
+
+To update to the latest version do:
+
+`$ pip3 install --upgrade disagree`
+
 ## Background
 
 Whilst working in NLP, I've been repeatedly working with datasets that have been manually labelled, and have thus had to evaluate the quality of the agreements between the annotators. In my (limited) experience of doing this, I have encountered a number of ways of it that have been helpful. In this library, I aim to group all of those things together for people to use.
