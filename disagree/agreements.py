@@ -95,8 +95,6 @@ class BiDisagreements():
             labels = [int(label) for label in row if not math.isnan(label)]
             if len(labels) <= 1: # If no one labelled or if 1 person labelled
                 continue
-            print(row)
-            print()
             num_disagreements = len(set(labels))
             if num_disagreements == 1:
                 full_agreement += 1
