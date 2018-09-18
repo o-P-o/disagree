@@ -30,7 +30,7 @@ Partial examples can be found at the top of the source code. Worked examples are
 
 ## Documentation
 
-### **annotations.agreements.BiDisagreements(df, labels)**
+### **disagree.agreements.BiDisagreements(df, labels)**
 
 `BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
 
@@ -59,7 +59,7 @@ There are some quite strict requirements with regards to the parameters here. (S
     * Parameter: normalise, boolean, optional -- If True, normalise the disagreement counts. If False, present absolute disagreement counts
     * Parameter: title, string, optional -- Title for the disagreements matrix
 
-### **annotations.metrics.Metrics(df, labels)**
+### **disagree.metrics.Metrics(df, labels)**
 
 This module gives you access to a number of metrics typically used for annotation disagreement statistics.
 
@@ -92,7 +92,7 @@ See above for df and labels args.
     * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
     * Parameter: title, string, optional -- Title for the disagreements matrix
 
-### **agree.metrics.Krippendorff(df, labels)**
+### **disagree.metrics.Krippendorff(df, labels)**
 
 See above for df and labels args.
 
