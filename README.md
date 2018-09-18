@@ -1,4 +1,4 @@
-# annotations
+# disagree - Assessing annotator disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
 
