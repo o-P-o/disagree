@@ -90,7 +90,6 @@ class BiDisagreements():
             Number of instances labelled with 3 or more disagreements
         """
         full_agreement, bidisagreement, tridisagreement, more = 0, 0, 0, 0
-        print(self.df)
         for idx, row in self.df.iterrows():
             labels = [int(label) for label in row if not math.isnan(label)]
             if len(labels) <= 1: # If no one labelled or if 1 person labelled
