@@ -1,3 +1,5 @@
+**Currently includes bugs related to matplotlib that I'm trying to fix.**
+
 # disagree - Assessing Annotator Disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
