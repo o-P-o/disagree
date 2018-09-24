@@ -1,8 +1,9 @@
-**Currently includes bugs related to matplotlib that I'm trying to fix.**
-
 # disagree - Assessing Annotator Disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
+
+I started it as a project to develop some understanding of Python packaging and workflow. (This is
+the primary reason for the messy release history and commit logs, for which I apologise.)
 
 ## Install
 
@@ -22,7 +23,7 @@ To update to the latest version do:
 
 Whilst working in NLP, I've been repeatedly working with datasets that have been manually labelled, and have thus had to evaluate the quality of the agreements between the annotators. In my (limited) experience of doing this, I have encountered a number of ways of it that have been helpful. In this library, I aim to group all of those things together for people to use.
 
-Please suggest any additions if you have any.
+Please suggest any additions/functionalities, and I will try my best to add them.
 
 ## Summary of features
 
@@ -40,11 +41,11 @@ Please suggest any additions if you have any.
 
 ## Python examples
 
-Partial examples can be found at the top of the source code. Worked examples are also provided in the Jupyter notebooks.
+Worked examples are provided in the Jupyter notebooks directory.
 
 ## Documentation
 
-### **disagree.agreements.BiDisagreements(df, labels)**
+### **disagree.BiDisagreements(df, labels)**
 
 `BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
 
@@ -65,13 +66,9 @@ There are some quite strict requirements with regards to the parameters here. (S
   * **`agreements_summary()`**
     * This will print out statistics on the number of instances with no disagreements, the number of bidisagreements, the number of tridisagreements, and the number of instances with worse cases (i.e. 3+ disagreements).
   * **`agreements_matrix()`**
-    * This will return a matrix of bidisagreements. Do with this what you will!
-    * Element [i, j] is the number of times there is a bidisagreement involving label i and label j.
-  * **`visualise(cmap="Reds", normalise=True, title="Bidisagreements")`**
-    * Used to visualise the agreements_matrix described above.
-    * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
-    * Parameter: normalise, boolean, optional -- If True, normalise the disagreement counts. If False, present absolute disagreement counts
-    * Parameter: title, string, optional -- Title for the disagreements matrix
+    * This will return a matrix of bidisagreements. Do with this what you will! The intention is that
+    you use something like matplotlib to visualise them properly.
+    * Element $(i, j)$ is the number of times there is a bidisagreement involving label $i$ and label $j$.
 
 ### **disagree.metrics.Metrics(df, labels)**
 
@@ -99,13 +96,11 @@ See above for df and labels args.
       * Options: (pearson (default), kendall, spearman)
     * This gives you either pearson , kendall, or spearman correlation statistics between two annotators
 
-  * **visualise_metric(func, cmap="Blues", title="")**
-    * Returns a matrix of size (num_annotators x num_annotators). Element [i, j] is the statistic value for agreements between annotator i and annotator j.
+  * **metric_matrix(func)**
+    * Returns a matrix of size (num_annotators x num_annotators). Element $(i, j)$ is the statistic value for agreements between annotator $i$ and annotator $j$.
     * Parameter: func, name of function for the metric you want to visualise.
       * Options: (metrics.Metrics.cohens_kappa, metrics.Metrics.joint_probability)
-    * Parameter: cmap, string, optional -- The cmaps colour you would like in the matrix visualisation (see matplotlib for possible values)
-    * Parameter: title, string, optional -- Title for the disagreements matrix
-
+    
 ### **disagree.metrics.Krippendorff(df, labels)**
 
 See above for df and labels args.
