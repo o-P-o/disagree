@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='disagree',
-      version='0.1.3',
+      version='0.1.7',
       author='Oliver Price',
       author_email='op.oliverprice@gmail.com',
       url='https://github.com/o-P-o/annotations',
