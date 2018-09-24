@@ -116,7 +116,7 @@ class BiDisagreements():
             for key2 in dict_[key1]:
                 self.matrix[key1][key2] = dict_[key1][key2]
 
-    def agreements_matrix(self):
+    def agreements_matrix(self, normalise=False):
         """
         Parameters
         ----------
@@ -139,5 +139,9 @@ class BiDisagreements():
                 self.agreements_dict[label2][label1] += 1
 
         self.dict2matrix()
+
+        if normalise:
+            num_labels = np.sum(self.matrix, axis=None) / 2
+            self.matrix = np.divide(self.matrix, num_labels)
 
         return self.matrix
