@@ -7,10 +7,6 @@ import sys
 import math
 import itertools
 
-import matplotlib
-matplotlib.use('PS')
-import matplotlib.pyplot as plt
-
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
 DATAFRAME_TYPES_ERROR = "DataFrame entries must be int types, float types, or NaN"
@@ -145,53 +141,3 @@ class BiDisagreements():
         self.dict2matrix()
 
         return self.matrix
-
-    def visualise(self, cmap="Reds", normalise=True, title="Bidisagreements"):
-        """
-        Displays the bidisagreement matrix as a plot
-
-        Parameters
-        ----------
-        cmap: string, optional (default "Reds")
-            See matplotlib.pylab.pyplot.get_cmap for possible values
-            Will throw an internal ValueError if invalid input.
-        normalise: boolean, optional (default True)
-            If True, normalises disagreement quantities by horizontal row
-            If False, gives absolute disagreement quantities
-        title: string, optional (default "")
-            Title for the visualisation
-        """
-        cm = self.agreements_matrix()
-        cmap = plt.get_cmap(cmap)
-
-        plt.imshow(cm, interpolation="nearest", cmap=cmap)
-        plt.title(title, fontsize=10)
-        plt.colorbar()
-
-        tick_marks = np.arange(len(self.labels))
-        plt.xticks(tick_marks, self.labels, rotation=45)
-        plt.yticks(tick_marks, self.labels)
-
-        if normalise:
-            if cm.sum(axis=None) > 0.:
-                numerator = cm.astype("float")
-                denom = cm.sum(axis=1)
-                cm = np.divide(numerator, denom, out=np.zeros_like(numerator), where=denom!=0)
-            else:
-                cm = cm.astype("float")
-
-        thresh = cm.max() / 1.5 if normalise else cm.max() / 2
-        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-            if normalise:
-                s = "{:0.2f}"
-            else:
-                s = "{:,}"
-            plt.text(j, i, s.format(cm[i, j]),
-                     horizontalalignment="center",
-                     color="white" if cm[i, j] > thresh else "black",
-                     fontsize=8)
-
-        plt.tight_layout(pad=0.00001)
-        plt.ylabel("Label")
-        plt.xlabel("Label")
-        plt.show()

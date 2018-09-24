@@ -10,8 +10,6 @@ import sys
 from collections import Counter
 from tqdm import tqdm
 
-from disagree.plot_utils import matrix_plot
-
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
 
@@ -22,7 +20,8 @@ LABELS_TYPE_ERROR = "Argument 2 must be of type list"
 LABELS_ELEMENTS_TYPE_ERROR = "All elements in list of labels must be of type int"
 ANNOTATORS_ERROR = "Invalid choice of annotators.\n Possible options: "
 KRIPP_DATA_TYPE_ERROR = "Invalid 'data_type' input.\n Possible options are (nominal, ordinal, interval, ratio)"
-VISUALISE_INPUT_ERROR = "Invalid metric input.\n Possible options are (joint, cohens, correlation)"
+MATRIX_INPUT_ERROR = """Error: The func argument must take two annotators as arguments.
+You may choose joint_probability or cohens_kappa"""
 
 
 def main_input_checks(df, labels):
@@ -245,7 +244,7 @@ class Metrics():
             result = spearmanr(ann1_, ann2_)
             return (result[0], result[1])
 
-    def visualise_metric(self, func, cmap="Blues", title=""):
+    def metric_matrix(self, func):
         all_anns = [ann for ann in self.df.columns]
         matrix = np.zeros((len(all_anns), len(all_anns)))
 
@@ -255,14 +254,16 @@ class Metrics():
                     val = func(ann1, ann2)
                     matrix[i][j] = float("{:.3f}".format(val))
                 except TypeError:
-                    print("""Error: The func argument must take two annotators as arguments.
-You may choose joint_probability or cohens_kappa""")
+                    print(MATRIX_INPUT_ERROR)
                     sys.exit(1)
 
-        matrix_plot(matrix, labels=self.labels, cmap=cmap, title=title)
+        return matrix
 
 
 def coincidence_mat(df_as_matrix, labels, num_anns, num_instances, labels_per_instance):
+    # Helper function for metrics.Krippendorff.
+    # For technical details on the coincidence matrix, see the
+    # Krippendorff's alpha Wikipedia page.
     coincidence_mat = np.zeros((len(labels), len(labels)))
 
     for i, label in enumerate(tqdm(labels)):
