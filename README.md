@@ -3,7 +3,7 @@
 This library aims to address annotation disagreements in manually labelled data.
 
 I started it as a project to develop some understanding of Python packaging and workflow. (This is
-the primary reason for the messy release history and commit logs, for which I apologise.)
+the primary reason for the messy release history and commit logs, for which I apologise.) But I hope this will be useful for a wider audience as well.
 
 ## Install
 
