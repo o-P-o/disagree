@@ -126,7 +126,7 @@ class Metrics():
 
         return (observed_agreement_prob - chance_agreement_prob) / (1 - chance_agreement_prob)
 
-    def df2table(self, df, n, N):
+    def df2table(self, df):
         # fleiss_kappa() helper function
         # Convert df(rows=instances, cols=annotators)
         # to df(rows=instances, cols=labels)
@@ -142,23 +142,38 @@ class Metrics():
 
         return pd.DataFrame(df_rows, columns=self.labels)
 
-    def proportion_label_per_category(self, df, n, N):
+    def proportion_label_per_category(self, df):
         # fleiss_kappa() helper function
         # Formula for calculating the proportion of all annotator
         # labels to the j-th category (list of all j)
-        normalise = 1 / (N * n)
         num_assignments = list(df.sum(axis=0))
-        return [normalise * i for i in num_assignments]
+        normaliser = 1. / sum(num_assignments)
 
-    def rater_agreement_extent(self, df, n, N):
+        return [normaliser * i for i in num_assignments]
+
+    def rater_agreement_extent(self, df):
         # fleiss_kappa() helper function
         # Formula for calculating the extent to which annotators
         # agree on instance j (list of all j)
-        normalise = 1 / (N * n)
-        df = df ** 2
-        num_per_instance = list(df.sum(axis=1))
-        summations = [x - n for x in num_per_instance]
-        return [normalise * i for i in summations]
+        # Returns 1 for full agreement
+        total_labels = list(df.sum(axis=1))
+
+        df2 = df ** 2
+        total_labels_squared = list(df2.sum(axis=1))
+
+        v1 = np.array(total_labels_squared)
+        v2 = np.array(total_labels)
+        summations = list(v1 - v2)
+
+        final = []
+        for i in range(len(total_labels)):
+            try:
+                normalise = 1. / (total_labels[i] * (total_labels[i] - 1.))
+            except ZeroDivisionError:
+                normalise = 0
+            final.append(normalise * summations[i])
+
+        return final
 
     def fleiss_kappa(self):
         """
@@ -175,14 +190,14 @@ class Metrics():
         """
         labels_per_instance = []
         for i, row in self.df.iterrows():
-            labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
-        ratings_per_instance = np.mean(labels_per_instance)
+            num_nans = sum(math.isnan(k) for k in row)
+            labels_per_instance.append(len(row) - num_nans)
 
         num_instances = self.df.shape[0]
-        fleiss_df = self.df2table(self.df, ratings_per_instance, num_instances)
+        fleiss_df = self.df2table(self.df)
 
-        prop_labels_per_cat = self.proportion_label_per_category(fleiss_df, ratings_per_instance, num_instances)
-        rater_agreement_extent = self.rater_agreement_extent(fleiss_df, ratings_per_instance, num_instances)
+        prop_labels_per_cat = self.proportion_label_per_category(fleiss_df)
+        rater_agreement_extent = self.rater_agreement_extent(fleiss_df)
 
         mean_P = (1 / num_instances) * sum(rater_agreement_extent)
         mean_p = sum([i ** 2 for i in prop_labels_per_cat])
@@ -258,6 +273,56 @@ class Metrics():
                     sys.exit(1)
 
         return matrix
+
+    def instance_degree(self, labels):
+        # bidisagreement_degree() helper function.
+        # Computes the degree for a given instance of data, input as a list of annotations=
+        all_labels = set(labels)
+
+        if len(all_labels) != 2:
+            return 0
+
+        label1 = all_labels[0]
+        label2 = all_labels[1]
+
+        if labels.count(label1) > labels.count(label2):
+            looper = label1
+        else:
+            looper = label2
+
+        new_labels = [1 if i == looper else 0 for i in labels]
+        count = sum(new_labels)
+
+        degree = (len(labels) - count) / count
+
+        return degree
+
+    def bidisagreement_degree(self):
+        """
+        Computes the degree of bidisagreements throughout the dataset.
+        This is done by considering each bidisagreement, and assigning
+        a value to this based on how stong the bidisagreement is.
+
+        Example: For a given instance, if half of the values are different
+        then the degree is 1, and if all are the same except for one, then
+        the degree will be as close to zero as possible.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        Float
+        """
+        average_degree = 0
+
+        for instance in self.df.itertuples():
+            instance = list(instance)
+            degree = self.instance_degree(instance)
+            average_degree += degree
+
+        return average_degree / self.df.shape[0]
 
 
 def coincidence_mat(df_as_matrix, labels, num_anns, num_instances, labels_per_instance):
@@ -406,3 +471,16 @@ class Krippendorff():
             return 1.
 
         return 1 - (observed_disagreement / expected_disagreement)
+
+
+if __name__ == "__main__":
+    test_annotations = {"a": [None, None, None, None, None, 1, 3, 0, 1, 0, 0, 2, 2, None, 2],
+                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
+                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
+
+    df = pd.DataFrame(test_annotations)
+    labels = [0, 1, 2, 3]
+
+    mets = Metrics(df, labels)
+    fleiss = mets.fleiss_kappa()
+    print(fleiss)
