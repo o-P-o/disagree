@@ -471,16 +471,3 @@ class Krippendorff():
             return 1.
 
         return 1 - (observed_disagreement / expected_disagreement)
-
-
-if __name__ == "__main__":
-    test_annotations = {"a": [None, None, None, None, None, 1, 3, 0, 1, 0, 0, 2, 2, None, 2],
-                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
-
-    df = pd.DataFrame(test_annotations)
-    labels = [0, 1, 2, 3]
-
-    mets = Metrics(df, labels)
-    fleiss = mets.fleiss_kappa()
-    print(fleiss)
