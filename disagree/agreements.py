@@ -6,6 +6,7 @@ import pandas as pd
 import sys
 import math
 import itertools
+import utils
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
@@ -35,7 +36,7 @@ class BiDisagreements():
     ability to visualise bidisagreements, and see values of other disagreement
     quantities.
     """
-    def __init__(self, df, labels):
+    def __init__(self, df):
         """
         Parameters
         ----------
@@ -45,13 +46,16 @@ class BiDisagreements():
             List of all the possible labels
             e.g. [label1, label2, label3, ... ]
         """
-        main_input_checks(df, labels)
+        converted_data = utils.convert_dataframe(df)
+        self.df = converted_data[0]
+        self.labels = converted_data[1]
+        self.data_dict = converted_data[2]
 
-        self.df = df
-        self.labels = labels
         n = len(self.labels)
         self.matrix = np.zeros((n, n))
         self.reference_length = self.df.shape[0]
+
+        main_input_checks(self.df, self.labels)
 
         # Initialise the empty agreements dictionary (good format for access efficiency later)
         # Of the form { label1: {label1: num_disagreements, label2: num_disagreements, ... },
@@ -145,3 +149,14 @@ class BiDisagreements():
             self.matrix = np.divide(self.matrix, num_labels)
 
         return self.matrix
+
+
+if __name__ == "__main__":
+    data = {'a': ['pig','pig', 'cat', None],
+       'b': ['cow', 'dog', None, 'pig'],
+       'c': ['cow', 'horse', 'pig', 'cat']}
+    df = pd.DataFrame(data)
+
+    bidis = BiDisagreements(df)
+    mat = bidis.agreements_matrix()
+    print(mat)

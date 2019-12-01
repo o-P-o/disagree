@@ -7,21 +7,25 @@ import pandas as pd
 import itertools
 import math
 import sys
+import utils
+
 from collections import Counter
 from tqdm import tqdm
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
 
-# Error messages
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
-DATAFRAME_TYPES_ERROR = "DataFrame entries must be int types, float types, or NaN"
+DATAFRAME_TYPES_ERROR = """DataFrame entries must be int types, float types,
+or NaN"""
 LABELS_TYPE_ERROR = "Argument 2 must be of type list"
-LABELS_ELEMENTS_TYPE_ERROR = "All elements in list of labels must be of type int"
+LABELS_ELEMENTS_TYPE_ERROR = """All elements in list of labels must be of type
+int"""
 ANNOTATORS_ERROR = "Invalid choice of annotators.\n Possible options: "
-KRIPP_DATA_TYPE_ERROR = "Invalid 'data_type' input.\n Possible options are (nominal, ordinal, interval, ratio)"
-MATRIX_INPUT_ERROR = """Error: The func argument must take two annotators as arguments.
-You may choose joint_probability or cohens_kappa"""
+KRIPP_DATA_TYPE_ERROR = """Invalid 'data_type' input.\n Possible options are
+(nominal, ordinal, interval, ratio)"""
+MATRIX_INPUT_ERROR = """Error: The func argument must take two annotators as
+arguments. You may choose joint_probability or cohens_kappa"""
 
 
 def main_input_checks(df, labels):
@@ -40,11 +44,12 @@ def main_input_checks(df, labels):
 
 
 class Metrics():
-    def __init__(self, df, labels):
-        main_input_checks(df, labels)
-
-        self.df = df
-        self.labels = labels
+    def __init__(self, df):
+        converted_data = utils.convert_dataframe(df)
+        self.df = converted_data[0]
+        self.labels = converted_data[1]
+        self.data_dict = converted_data[2]
+        main_input_checks(self.df, self.labels)
 
     def joint_probability(self, ann1, ann2):
         """
@@ -68,11 +73,10 @@ class Metrics():
             raise ValueError(ANNOTATORS_ERROR + str(list(all_anns)))
 
         df = self.df.dropna(subset=[ann1, ann2])
-
         ann1_labels = df[ann1].values.tolist()
         ann2_labels = df[ann2].values.tolist()
-
-        agree = [1 if label[0] == label[1] else 0 for label in zip(ann1_labels, ann2_labels)]
+        zipped = zip(ann1_labels, ann2_labels)
+        agree = [1 if label[0] == label[1] else 0 for label in zipped]
 
         return sum(agree) / len(agree)
 
@@ -97,10 +101,8 @@ class Metrics():
             raise ValueError(ANNOTATORS_ERROR + str(list(all_anns)))
 
         df = self.df.dropna(subset=[ann1, ann2])
-
         ann1_labels = df[ann1].values.tolist()
         ann2_labels = df[ann2].values.tolist()
-
         num_instances = self.df.shape[0]
         num_categories = len(self.labels)
 
@@ -124,7 +126,10 @@ class Metrics():
         if chance_agreement_prob == 1:
             return 1.
 
-        return (observed_agreement_prob - chance_agreement_prob) / (1 - chance_agreement_prob)
+        numerator = observed_agreement_prob - chance_agreement_prob
+        denominator = 1. - chance_agreement_prob
+
+        return numerator / denominator
 
     def df2table(self, df):
         # fleiss_kappa() helper function
@@ -157,10 +162,8 @@ class Metrics():
         # agree on instance j (list of all j)
         # Returns 1 for full agreement
         total_labels = list(df.sum(axis=1))
-
         df2 = df ** 2
         total_labels_squared = list(df2.sum(axis=1))
-
         v1 = np.array(total_labels_squared)
         v2 = np.array(total_labels)
         summations = list(v1 - v2)
@@ -195,7 +198,6 @@ class Metrics():
 
         num_instances = self.df.shape[0]
         fleiss_df = self.df2table(self.df)
-
         prop_labels_per_cat = self.proportion_label_per_category(fleiss_df)
         rater_agreement_extent = self.rater_agreement_extent(fleiss_df)
 
@@ -213,7 +215,8 @@ class Metrics():
         the agreement between two annotators. This
         method uses the scipy.stats module.
 
-        Only appropriate for datasets larger than 500 or so (see scipy documentation).
+        Only appropriate for datasets larger than 500 or so (see scipy
+        documentation).
 
         Parameters
         ----------
@@ -230,7 +233,10 @@ class Metrics():
         -------
         Tuple, (correlation, p-value)
         """
-        if not (measure == "pearson" or measure == "spearman" or measure == "kendall"):
+        P = "pearson"
+        S = "spearman"
+        K = "kendall"
+        if not (measure == P or measure == S or measure == K):
             raise ValueError("Input measure '" + str(measure) + "' is invalid.\n Possible options: (pearson, kendall, spearman)")
 
         all_anns = self.df.columns
@@ -276,7 +282,7 @@ class Metrics():
 
     def instance_degree(self, labels):
         # bidisagreement_degree() helper function.
-        # Computes the degree for a given instance of data, input as a list of annotations=
+        # Computes the degree for a given instance of data, input as a list of annotations
         all_labels = set(labels)
 
         if len(all_labels) != 2:
@@ -292,7 +298,6 @@ class Metrics():
 
         new_labels = [1 if i == looper else 0 for i in labels]
         count = sum(new_labels)
-
         degree = (len(labels) - count) / count
 
         return degree
@@ -316,7 +321,6 @@ class Metrics():
         Float
         """
         average_degree = 0
-
         for instance in self.df.itertuples():
             instance = list(instance)
             degree = self.instance_degree(instance)
@@ -471,3 +475,14 @@ class Krippendorff():
             return 1.
 
         return 1 - (observed_disagreement / expected_disagreement)
+
+
+if __name__ == "__main__":
+    data = {'a': ['pig','pig', 'cat', None],
+       'b': ['cow', 'dog', None, 'pig'],
+       'c': ['cow', 'horse', 'pig', 'cat']}
+    df = pd.DataFrame(data)
+
+    mets = Metrics(df)
+    fleiss = mets.fleiss_kappa()
+    print(fleiss)
