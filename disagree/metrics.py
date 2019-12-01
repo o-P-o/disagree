@@ -478,11 +478,11 @@ class Krippendorff():
 
 
 if __name__ == "__main__":
-    data = {'a': ['pig','pig', 'cat', None],
-       'b': ['cow', 'dog', None, 'pig'],
-       'c': ['cow', 'horse', 'pig', 'cat']}
-    df = pd.DataFrame(data)
+    test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
+                        "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
+                        "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
+    df = pd.DataFrame(test_annotations)
 
     mets = Metrics(df)
-    fleiss = mets.fleiss_kappa()
-    print(fleiss)
+    jp = mets.joint_probability("a", "b")
+    print(jp)
