@@ -329,26 +329,35 @@ class Metrics():
         return average_degree / self.df.shape[0]
 
 
-def coincidence_mat(df_as_matrix, labels, num_anns, num_instances, labels_per_instance):
+def main_count_(num_instances, labels_per_instance, num_anns, df_as_matrix, i, j):
+    main_count = 0
+    for k in range(num_instances):
+        count = 0
+        m = labels_per_instance[k]
+        if (m == 0 or m == 1):
+            continue
+        for perm in itertools.permutations(range(num_anns), 2):
+            b1 = int((df_as_matrix[perm[0]][k] == i))
+            b2 = int((df_as_matrix[perm[1]][k] == j))
+            count += (b1 * b2)
+        count /= (m - 1)
+        main_count += count
+    return main_count
+
+def coincidence_mat(df_as_matrix, labels, num_anns, num_instances, labels_per_instance, use_tqdm):
     # Helper function for metrics.Krippendorff.
     # For technical details on the coincidence matrix, see the
     # Krippendorff's alpha Wikipedia page.
     coincidence_mat = np.zeros((len(labels), len(labels)))
 
-    for i, label in enumerate(tqdm(labels)):
+    if use_tqdm:
+        loop_object = tqdm(labels)
+    else:
+        loop_object = labels
+
+    for i, label in enumerate(loop_object):
         for j in range(len(labels)):
-            main_count = 0
-            for k in range(num_instances):
-                count = 0
-                m = labels_per_instance[k]
-                if (m == 0 or m == 1):
-                    continue
-                for perm in itertools.permutations(range(num_anns), 2):
-                    b1 = int((df_as_matrix[perm[0]][k] == i))
-                    b2 = int((df_as_matrix[perm[1]][k] == j))
-                    count += (b1 * b2)
-                count /= (m - 1)
-                main_count += count
+            main_count = main_count_(num_instances, labels_per_instance, num_anns, df_as_matrix, i, j)
             coincidence_mat[i][j] = main_count
 
     return coincidence_mat
@@ -382,7 +391,7 @@ class Krippendorff():
     coincidence_matrix_sum: 1D numpy array
         sum of rows/columns in coincidence_matrix
     """
-    def __init__(self, df, labels):
+    def __init__(self, df, labels, use_tqdm=False):
         main_input_checks(df, labels)
 
         self.df = df
@@ -390,13 +399,14 @@ class Krippendorff():
         self.num_anns = df.shape[1]
         self.num_instances = df.shape[0]
         self.A = df.as_matrix().T
+        self.use_tqdm = use_tqdm
 
         self.labels_per_instance = []
         for i, row in self.df.iterrows():
             self.labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
 
-        self.coincidence_matrix = coincidence_mat(self.A, self.labels,
-                    self.num_anns, self.num_instances, self.labels_per_instance)
+        self.coincidence_matrix = coincidence_mat(self.A, self.labels, self.num_anns, self.num_instances, self.labels_per_instance, self.use_tqdm)
+        print(self.coincidence_matrix)
 
         self.coincidence_matrix_sum = np.sum(self.coincidence_matrix, axis=0)
 
@@ -478,11 +488,22 @@ class Krippendorff():
 
 
 if __name__ == "__main__":
-    test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
-                        "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-                        "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
-    df = pd.DataFrame(test_annotations)
+    #test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
+    #                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
+    #                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
 
-    mets = Metrics(df)
-    jp = mets.joint_probability("a", "b")
-    print(jp)
+    test_annotations = {"a": [0, 1, 2, 2, 1, 0, 3, 0, 1, None, None, None],
+                        "b": [0, 1, 2, 2, 1, 1, 3, 0, 1, 4, None, 2],
+                        "c": [None, 2, 2, 2, 1, 2, 3, 1, 1, 4, 0, None],
+                        "d": [0, 1, 2, 2, 1, 3, 3, 0, 1, 4, 0, None]}
+    df = pd.DataFrame(test_annotations)
+    labels = [0, 1, 2, 3, 4]
+
+    print(df)
+
+    kripp = Krippendorff(df, labels, use_tqdm=True)
+    alpha = kripp.alpha()
+    print("Kripps alpha: {}".format(alpha))
+
+    #jp = mets.joint_probability("a", "b")
+    #print(jp)
