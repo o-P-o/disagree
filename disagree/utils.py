@@ -7,10 +7,15 @@ def move_to_end(lst):
     # then replace with None and move to the end.
     new_list = []
     for label in lst:
-        if float(label) == 0.0:
-            new_list.append(0.0)
-        if label and not math.isnan(label):
-            new_list.append(label)
+        if not isinstance(label, str):
+            if float(label) == 0.0:
+                new_list.append(0.0)
+        if label:
+            if isinstance(label, str):
+                new_list.append(label)
+            else:
+                if not math.isnan(label):
+                    new_list.append(label)
 
     return new_list + [None]
 
@@ -18,6 +23,8 @@ def count_nans(lst):
     # Count the number of NaNs in a list.
     num_nans = 0
     for x in lst:
+        if isinstance(x, str):
+            continue
         if math.isnan(x):
             num_nans += 1
 
@@ -47,6 +54,9 @@ def flexible_data(df):
 
     new_unique = []
     for dat in unique_data:
+        if isinstance(dat, str):
+            new_unique.append(dat)
+            continue
         if not math.isnan(dat):
             new_unique.append(dat)
     if num_nans > 0:
@@ -71,10 +81,13 @@ def convert_dataframe(df):
     for idx, col in df.iteritems():
         new_column = []
         for instance in col:
-            if math.isnan(instance):
-                new_column.append(data_dict[None])
-            else:
+            if isinstance(instance, str):
                 new_column.append(data_dict[instance])
+            else:
+                if math.isnan(instance):
+                    new_column.append(data_dict[None])
+                else:
+                    new_column.append(data_dict[instance])
         new_data[idx] = new_column
 
     new_data = pd.DataFrame(new_data)
