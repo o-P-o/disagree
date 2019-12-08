@@ -406,7 +406,6 @@ class Krippendorff():
             self.labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
 
         self.coincidence_matrix = coincidence_mat(self.A, self.labels, self.num_anns, self.num_instances, self.labels_per_instance, self.use_tqdm)
-        print(self.coincidence_matrix)
 
         self.coincidence_matrix_sum = np.sum(self.coincidence_matrix, axis=0)
 
@@ -492,14 +491,19 @@ if __name__ == "__main__":
     #                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
     #                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
 
-    test_annotations = {"a": [0, 1, 2, 2, 1, 0, 3, 0, 1, None, None, None],
-                        "b": [0, 1, 2, 2, 1, 1, 3, 0, 1, 4, None, 2],
-                        "c": [None, 2, 2, 2, 1, 2, 3, 1, 1, 4, 0, None],
-                        "d": [0, 1, 2, 2, 1, 3, 3, 0, 1, 4, 0, None]}
+    test_annotations = {"a": [0, 0, 0, 0, 2, 7, 3, 2, 6, 0],
+                        "b": [0, 2, 0, 3, 2, 7, 2, 5, 5, 2],
+                        "c": [0, 6, 3, 9, 8, 0, 6, 3, 2, 2],
+                        "d": [0, 4, 5, 2, 1, 0, 3, 2, 1, 3],
+                        "e": [14, 2, 6, 0, 1, 0, 0, 2, 0, 7]}
     df = pd.DataFrame(test_annotations)
-    labels = [0, 1, 2, 3, 4]
+    labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
     print(df)
+
+    met = Metrics(df)
+    fleiss = met.fleiss_kappa()
+    print("Fleiss kappa: {}".format(fleiss))
 
     kripp = Krippendorff(df, labels, use_tqdm=True)
     alpha = kripp.alpha()
