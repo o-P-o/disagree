@@ -416,12 +416,15 @@ class Krippendorff():
             return 1
 
     def delta_ordinal(self, v1, v2):
-        v1, v2 = float(v1), float(v2)
+        v1, v2 = int(v1), int(v2)
+        
         val = 0
         for g in range(v1, v2 + 1):
             element1 = self.coincidence_matrix_sum[g]
-            element2 = (self.coincidence_matrix_sum[v1] + self.coincidence_matrix_sum[v2]) / 2
-            val += (element1 + element2)
+            val += element1
+
+        element2 = (self.coincidence_matrix_sum[v1] + self.coincidence_matrix_sum[v2]) / 2.
+        val = val - element2
 
         return val ** 2
 
@@ -491,13 +494,44 @@ if __name__ == "__main__":
     #                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
     #                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
 
-    test_annotations = {"a": [0, 0, 0, 0, 2, 7, 3, 2, 6, 0],
-                        "b": [0, 2, 0, 3, 2, 7, 2, 5, 5, 2],
-                        "c": [0, 6, 3, 9, 8, 0, 6, 3, 2, 2],
-                        "d": [0, 4, 5, 2, 1, 0, 3, 2, 1, 3],
-                        "e": [14, 2, 6, 0, 1, 0, 0, 2, 0, 7]}
-    df = pd.DataFrame(test_annotations)
-    labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    data = {"A": [0, 5, 7, 6, 7, 8, 6, 4, 6, 8, 7, 7, 8, 4, 8, 9, 6, 4, 4, 6, 6],
+            "B": [0, 8, 2, 6, 7, 7, 8, 2, 7, 9, 7, 6, 6, 2, 6, 6, 6, 3, 7, 9, 7],
+            "C": [0, 9, 8, 6, 9, 6, 7, 6, 8, 10, 9, 9, 9, 7, 10, 9, 9, 9, 7, 9, 9],
+            "D": [6, 6, 0, 7, 8, 7, 9, 7, 7, 7, 7, 7, 9, 8, 9, 9, 8, 3, 6, 7, 8]}
+    df = pd.DataFrame(data)
+    labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    kripp = Krippendorff(df, labels)
+
+    alpha = kripp.alpha(data_type="ordinal")
+    print(alpha)
+
+'''
+    test_annotations = {"1": [4, 1, 2, 1, 0, 0, 0, 0, 0, 1],
+                        "2": [4, 1, 2, 1, 0, 0, 0, 0, 0, 1],
+                        "3": [4, 2, 2, 1, 1, 0, 0, 1, 0, 2],
+                        "4": [4, 2, 3, 2, 1, 0, 1, 1, 0, 2],
+                        "5": [4, 2, 3, 2, 2, 0, 1, 1, 0, 3],
+                        "6": [4, 2, 3, 2, 2, 0, 2, 1, 0, 3],
+                        "7": [4, 2, 3, 2, 2, 0, 2, 1, 1, 3],
+                        "8": [4, 2, 3, 2, 2, 1, 2, 2, 1, 4],
+                        "9": [4, 3, 4, 2, 2, 1, 2, 2, 1, 4],
+                        "10": [4, 3, 4, 2, 2, 1, 2, 2, 1, 4],
+                        "11": [4, 3, 4, 2, 2, 1, 2, 3, 1, 4],
+                        "12": [4, 3, 4, 2, 2, 1, 3, 3, 2, 4],
+                        "13": [4, 4, 4, 3, 3, 1, 3, 4, 2, 4],
+                        "14": [4, 4, 4, 3, 4, 1, 3, 4, 3, 4]}
+
+    convert = {0: "cat", 1: "dog", 2: "cow", 3: "bug", 4: "poo"}
+    new_test_annotations = { }
+    for fld in test_annotations:
+        labels = test_annotations[fld]
+        new_labels = []
+        for label in labels:
+            new_labels.append(convert[label])
+        new_test_annotations[fld] = new_labels
+
+    df = pd.DataFrame(new_test_annotations)
 
     print(df)
 
@@ -505,9 +539,10 @@ if __name__ == "__main__":
     fleiss = met.fleiss_kappa()
     print("Fleiss kappa: {}".format(fleiss))
 
-    kripp = Krippendorff(df, labels, use_tqdm=True)
-    alpha = kripp.alpha()
-    print("Kripps alpha: {}".format(alpha))
+    #kripp = Krippendorff(df, labels)
+    #alpha = kripp.alpha()
+    #print("Kripps alpha: {}".format(alpha))
 
     #jp = mets.joint_probability("a", "b")
     #print(jp)
+'''
