@@ -398,7 +398,7 @@ class Krippendorff():
         self.labels = labels
         self.num_anns = df.shape[1]
         self.num_instances = df.shape[0]
-        self.A = df.as_matrix().T
+        self.A = df.values.T
         self.use_tqdm = use_tqdm
 
         self.labels_per_instance = []
