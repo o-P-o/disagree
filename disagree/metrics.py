@@ -16,11 +16,6 @@ from scipy.stats import pearsonr, kendalltau, spearmanr
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
-DATAFRAME_TYPES_ERROR = """DataFrame entries must be int types, float types,
-or NaN"""
-LABELS_TYPE_ERROR = "Argument 2 must be of type list"
-LABELS_ELEMENTS_TYPE_ERROR = """All elements in list of labels must be of type
-int"""
 ANNOTATORS_ERROR = "Invalid choice of annotators.\n Possible options: "
 KRIPP_DATA_TYPE_ERROR = """Invalid 'data_type' input.\n Possible options are
 (nominal, ordinal, interval, ratio)"""
@@ -31,16 +26,6 @@ arguments. You may choose joint_probability or cohens_kappa"""
 def main_input_checks(df, labels):
     if not isinstance(df, pd.DataFrame):
         raise TypeError(DATAFRAME_ERROR)
-
-    for type_ in df.dtypes:
-        if not (type_ == int or type_ == float):
-            raise TypeError(DATAFRAME_TYPES_ERROR)
-
-    if not isinstance(labels, list):
-        raise TypeError(LABELS_TYPE_ERROR)
-
-    if not all(isinstance(n, int) for n in labels):
-        raise TypeError(LABELS_ELEMENTS_TYPE_ERROR)
 
 
 class Metrics():
@@ -257,13 +242,14 @@ class Metrics():
             raise ValueError("Annotators " + str(ann1) + " and " + str(ann2) + " have not labelled any of the same instances.")
 
         if measure == "pearson":
-            return pearsonr(ann1_, ann2_)
+            result = pearsonr(ann1_, ann2_)
+            return (abs(result[0]), result[1])
         elif measure == "kendall":
             result = kendalltau(ann1_, ann2_)
-            return (result[0], result[1])
+            return (abs(result[0]), result[1])
         elif measure == "spearman":
             result = spearmanr(ann1_, ann2_)
-            return (result[0], result[1])
+            return (abs(result[0]), result[1])
 
     def metric_matrix(self, func):
         all_anns = [ann for ann in self.df.columns]
@@ -391,14 +377,20 @@ class Krippendorff():
     coincidence_matrix_sum: 1D numpy array
         sum of rows/columns in coincidence_matrix
     """
-    def __init__(self, df, labels, use_tqdm=False):
-        main_input_checks(df, labels)
+    def __init__(self, df, use_tqdm=False):
+        converted_data = utils.convert_dataframe(df)
+        self.df = converted_data[0]
+        self.labels = converted_data[1]
+        self.data_dict = converted_data[2]
 
-        self.df = df
-        self.labels = labels
-        self.num_anns = df.shape[1]
-        self.num_instances = df.shape[0]
-        self.A = df.as_matrix().T
+        #main_input_checks(df, labels)
+
+        #self.df = df
+        #self.labels = labels
+        self.num_anns = self.df.shape[1]
+        self.num_instances = self.df.shape[0]
+        self.A = self.df.values
+        self.A = self.A.transpose()
         self.use_tqdm = use_tqdm
 
         self.labels_per_instance = []
@@ -406,7 +398,7 @@ class Krippendorff():
             self.labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
 
         self.coincidence_matrix = coincidence_mat(self.A, self.labels, self.num_anns, self.num_instances, self.labels_per_instance, self.use_tqdm)
-
+        print(self.coincidence_matrix)
         self.coincidence_matrix_sum = np.sum(self.coincidence_matrix, axis=0)
 
     def delta_nominal(self, v1, v2):
@@ -417,7 +409,7 @@ class Krippendorff():
 
     def delta_ordinal(self, v1, v2):
         v1, v2 = int(v1), int(v2)
-        
+
         val = 0
         for g in range(v1, v2 + 1):
             element1 = self.coincidence_matrix_sum[g]
@@ -487,62 +479,3 @@ class Krippendorff():
             return 1.
 
         return 1 - (observed_disagreement / expected_disagreement)
-
-
-if __name__ == "__main__":
-    #test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
-    #                    "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
-    #                    "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
-
-    data = {"A": [0, 5, 7, 6, 7, 8, 6, 4, 6, 8, 7, 7, 8, 4, 8, 9, 6, 4, 4, 6, 6],
-            "B": [0, 8, 2, 6, 7, 7, 8, 2, 7, 9, 7, 6, 6, 2, 6, 6, 6, 3, 7, 9, 7],
-            "C": [0, 9, 8, 6, 9, 6, 7, 6, 8, 10, 9, 9, 9, 7, 10, 9, 9, 9, 7, 9, 9],
-            "D": [6, 6, 0, 7, 8, 7, 9, 7, 7, 7, 7, 7, 9, 8, 9, 9, 8, 3, 6, 7, 8]}
-    df = pd.DataFrame(data)
-    labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-    kripp = Krippendorff(df, labels)
-
-    alpha = kripp.alpha(data_type="ordinal")
-    print(alpha)
-
-'''
-    test_annotations = {"1": [4, 1, 2, 1, 0, 0, 0, 0, 0, 1],
-                        "2": [4, 1, 2, 1, 0, 0, 0, 0, 0, 1],
-                        "3": [4, 2, 2, 1, 1, 0, 0, 1, 0, 2],
-                        "4": [4, 2, 3, 2, 1, 0, 1, 1, 0, 2],
-                        "5": [4, 2, 3, 2, 2, 0, 1, 1, 0, 3],
-                        "6": [4, 2, 3, 2, 2, 0, 2, 1, 0, 3],
-                        "7": [4, 2, 3, 2, 2, 0, 2, 1, 1, 3],
-                        "8": [4, 2, 3, 2, 2, 1, 2, 2, 1, 4],
-                        "9": [4, 3, 4, 2, 2, 1, 2, 2, 1, 4],
-                        "10": [4, 3, 4, 2, 2, 1, 2, 2, 1, 4],
-                        "11": [4, 3, 4, 2, 2, 1, 2, 3, 1, 4],
-                        "12": [4, 3, 4, 2, 2, 1, 3, 3, 2, 4],
-                        "13": [4, 4, 4, 3, 3, 1, 3, 4, 2, 4],
-                        "14": [4, 4, 4, 3, 4, 1, 3, 4, 3, 4]}
-
-    convert = {0: "cat", 1: "dog", 2: "cow", 3: "bug", 4: "poo"}
-    new_test_annotations = { }
-    for fld in test_annotations:
-        labels = test_annotations[fld]
-        new_labels = []
-        for label in labels:
-            new_labels.append(convert[label])
-        new_test_annotations[fld] = new_labels
-
-    df = pd.DataFrame(new_test_annotations)
-
-    print(df)
-
-    met = Metrics(df)
-    fleiss = met.fleiss_kappa()
-    print("Fleiss kappa: {}".format(fleiss))
-
-    #kripp = Krippendorff(df, labels)
-    #alpha = kripp.alpha()
-    #print("Kripps alpha: {}".format(alpha))
-
-    #jp = mets.joint_probability("a", "b")
-    #print(jp)
-'''
