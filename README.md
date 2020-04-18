@@ -19,7 +19,7 @@ To update to the latest version do:
 
 `$ pip3 install --upgrade disagree`
 
-Latest version: `0.2.7`
+Latest version: `1.1`
 
 ## Background
 
