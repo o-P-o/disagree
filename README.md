@@ -1,4 +1,4 @@
-# disagree - Assessing Annotator Disagreements in Python (CURRENTLY BUGS EXIST IN THIS)
+# disagree - Assessing Annotator Disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
 
@@ -18,6 +18,8 @@ or
 To update to the latest version do:
 
 `$ pip3 install --upgrade disagree`
+
+Latest version: `0.2.7`
 
 ## Background
 
@@ -45,49 +47,43 @@ Worked examples are provided in the Jupyter notebooks directory.
 
 ## Documentation
 
-### **disagree.BiDisagreements(df, labels)**
+### **disagree.BiDisagreements(df)**
 
 `BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
 
-There are some quite strict requirements with regards to the parameters here. (See usage example in notebooks or top of source code.)
+Main things to note:
 
 * `df`: Pandas DataFrame containing annotator labels
-  * ***Rows***: Instances of the data that is labelled
+  * ***Rows***: Instances of the data that are labelled
   * ***Columns***: Annotators
   * Element [i, j] is annotator j's label for data instance i.
-  * Entries must be integers, floats, or pandas nan values
-  * The lowest label must be 0. E.g. if your labels are 1-5, convert them to 0-4.
-
-* `labels`: list containing possible labels
-  * Must be from 0 to the maximum label. If your labels are words then please convert them to corresponding integers.
-  * Example: If the labels are [male, female, trans], you must convert to [0, 1, 2]
+  * Entries can be integers, floats, strings, or NaN/None values.
 
 * **Attributes**:
   * **`agreements_summary()`**
     * This will print out statistics on the number of instances with no disagreements, the number of bidisagreements, the number of tridisagreements, and the number of instances with worse cases (i.e. 3+ disagreements).
   * **`agreements_matrix()`**
-    * This will return a matrix of bidisagreements. Do with this what you will! The intention is that
-    you use something like matplotlib to visualise them properly.
+    * This will return a matrix of bidisagreements. Do with this what you will! The intention is that you use something like matplotlib to visualise them properly.
     * Element $(i, j)$ is the number of times there is a bidisagreement involving label $i$ and label $j$.
 
-### **disagree.metrics.Metrics(df, labels)**
+### **disagree.metrics.Metrics(df)**
 
 This module gives you access to a number of metrics typically used for annotation disagreement statistics.
 
-See above for df and labels args.
+See above for df arg. The following are the statistical attributes (in order of simplicity):
 
 * **Attributes**:
   * **`joint_probability(ann1, ann2)`**
     * Parameter: ann1, string, name of one of the annotators from the DataFrame columns
     * Parameter: ann2, string, name of one of the annotators from the DataFrame columns
-    * This gives the join probability of agreement between ann1 and ann2. You should probably not use this measure for academic purposes, but is here for completion.
+    * This gives the join probability of agreement between ann1 and ann2. You should probably not use this measure for academic purposes, but is here for completeness.
 
   * **`cohens_kappa(ann1, ann2)`**:
     * Parameter: ann1, string, name of one of the annotators from the DataFrame columns
     * Parameter: ann2, string, name of one of the annotators from the DataFrame columns
 
   * **`fliess_kappa()`**
-    * No args
+    * No args. (This is a multi-annotator statistical measure.)
 
   * **`correlation(ann1, ann2, measure="pearson")`**
     * Parameter: ann1, string, name of one of the annotators from the DataFrame columns
@@ -101,9 +97,9 @@ See above for df and labels args.
     * Parameter: func, name of function for the metric you want to visualise.
       * Options: (metrics.Metrics.cohens_kappa, metrics.Metrics.joint_probability)
     
-### **disagree.metrics.Krippendorff(df, labels)**
+### **disagree.metrics.Krippendorff(df)**
 
-See above for df and labels args.
+See above for df and labels args. The following is the attribute for this class:
 
 * **Attributes**
   * **`alpha(data_type="nominal")`**
