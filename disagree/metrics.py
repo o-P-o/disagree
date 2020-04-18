@@ -398,7 +398,6 @@ class Krippendorff():
             self.labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
 
         self.coincidence_matrix = coincidence_mat(self.A, self.labels, self.num_anns, self.num_instances, self.labels_per_instance, self.use_tqdm)
-        print(self.coincidence_matrix)
         self.coincidence_matrix_sum = np.sum(self.coincidence_matrix, axis=0)
 
     def delta_nominal(self, v1, v2):
