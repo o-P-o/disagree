@@ -7,10 +7,10 @@ import pandas as pd
 import itertools
 import math
 import sys
-import utils
 
 from collections import Counter
 from tqdm import tqdm
+from utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
@@ -30,7 +30,7 @@ def main_input_checks(df, labels):
 
 class Metrics():
     def __init__(self, df):
-        converted_data = utils.convert_dataframe(df)
+        converted_data = convert_dataframe(df)
         self.df = converted_data[0]
         self.labels = converted_data[1]
         self.data_dict = converted_data[2]
@@ -378,7 +378,7 @@ class Krippendorff():
         sum of rows/columns in coincidence_matrix
     """
     def __init__(self, df, use_tqdm=False):
-        converted_data = utils.convert_dataframe(df)
+        converted_data = convert_dataframe(df)
         self.df = converted_data[0]
         self.labels = converted_data[1]
         self.data_dict = converted_data[2]
