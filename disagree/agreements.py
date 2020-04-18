@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 import math
 import sys
-import utils
+
+from utils import convert_dataframe
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
@@ -32,7 +33,7 @@ class BiDisagreements():
             List of all the possible labels
             e.g. [label1, label2, label3, ... ]
         """
-        converted_data = utils.convert_dataframe(df)
+        converted_data = convert_dataframe(df)
         self.df = converted_data[0]
         self.labels = converted_data[1]
         self.data_dict = converted_data[2]
