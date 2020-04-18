@@ -3,31 +3,16 @@ See Jupyter notebooks for example usage
 """
 import numpy as np
 import pandas as pd
-import sys
 import math
-import itertools
 import utils
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
-DATAFRAME_TYPES_ERROR = "DataFrame entries must be int types, float types, or NaN"
-LABELS_TYPE_ERROR = "Argument 2 must be of type list"
-LABELS_ELEMENTS_TYPE_ERROR = "All elements in list of labels must be of type int"
 
 
 def main_input_checks(df, labels):
     if not isinstance(df, pd.DataFrame):
         raise TypeError(DATAFRAME_ERROR)
-
-    for type_ in df.dtypes:
-        if not (type_ == int or type_ == float):
-            raise TypeError(DATAFRAME_TYPES_ERROR)
-
-    if not isinstance(labels, list):
-        raise TypeError(LABELS_TYPE_ERROR)
-
-    if not all(isinstance(n, int) for n in labels):
-        raise TypeError(LABELS_ELEMENTS_TYPE_ERROR)
 
 
 class BiDisagreements():
@@ -149,14 +134,3 @@ class BiDisagreements():
             self.matrix = np.divide(self.matrix, num_labels)
 
         return self.matrix
-
-
-if __name__ == "__main__":
-    data = {'a': ['pig','pig', 'cat', None],
-       'b': ['cow', 'dog', None, 'pig'],
-       'c': ['cow', 'horse', 'pig', 'cat']}
-    df = pd.DataFrame(data)
-
-    bidis = BiDisagreements(df)
-    mat = bidis.agreements_matrix()
-    print(mat)
