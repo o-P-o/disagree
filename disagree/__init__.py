@@ -1,1 +1,1 @@
-from agreements import BiDisagreements
+from disagree.agreements import BiDisagreements
