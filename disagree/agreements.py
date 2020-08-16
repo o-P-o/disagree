@@ -6,7 +6,7 @@ import pandas as pd
 import math
 import sys
 
-from utils import convert_dataframe
+from disagree.utils import convert_dataframe
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"

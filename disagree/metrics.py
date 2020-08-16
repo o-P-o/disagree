@@ -10,7 +10,7 @@ import sys
 
 from collections import Counter
 from tqdm import tqdm
-from utils import convert_dataframe
+from disagree.utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
