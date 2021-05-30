@@ -6,7 +6,7 @@ import pandas as pd
 
 sys.path.append("..")
 
-from metrics import Krippendorff
+from diagree.metrics import Krippendorff
 
 test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
                     "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],

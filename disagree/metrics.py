@@ -1,16 +1,20 @@
 """
 See Jupyter notebooks for example usage
 """
-
+import sys
+#patch ModuleNotFoundError: No module named 'utils'
+#import os
+#sys.path.append(os.path.dirname(file))
+#
 import numpy as np
 import pandas as pd
 import itertools
 import math
-import sys
+#import sys
 
 from collections import Counter
 from tqdm import tqdm
-from utils import convert_dataframe
+from disagree.utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
@@ -29,7 +33,7 @@ def main_input_checks(df, labels):
 
 
 class Metrics():
-    def __init__(self, df):
+    def __init__(self, df, labels):
         converted_data = convert_dataframe(df)
         self.df = converted_data[0]
         self.labels = converted_data[1]
@@ -88,7 +92,8 @@ class Metrics():
         df = self.df.dropna(subset=[ann1, ann2])
         ann1_labels = df[ann1].values.tolist()
         ann2_labels = df[ann2].values.tolist()
-        num_instances = self.df.shape[0]
+        #num_instances = self.df.shape[0]
+        num_instances = df.shape[0] 
         num_categories = len(self.labels)
 
         ann1_num, ann2_num = [], []
