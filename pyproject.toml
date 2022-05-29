@@ -1,0 +1,6 @@
+[build-system]
+requires = ["setuptools >= 42",
+            "scipy >= 1.6.0",
+            "pandas >= 1.4.2",
+            "tqdm >= 4.51.0"]
+build-backend = "setuptools.build_meta"

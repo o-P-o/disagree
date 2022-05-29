@@ -1,3 +1,17 @@
+Metadata-Version: 2.1
+Name: disagree
+Version: 1.2.5
+Summary: Visual and statistical assessment of annotator agreements
+Home-page: https://github.com/o-P-o/disagree/
+Author: Oliver Price
+Author-email: op.oliverprice@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENCE
+
 # disagree - Assessing Annotator Disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
