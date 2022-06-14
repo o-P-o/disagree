@@ -87,7 +87,7 @@ class Metrics():
         df = self.df.dropna(subset=[ann1, ann2])
         ann1_labels = df[ann1].values.tolist()
         ann2_labels = df[ann2].values.tolist()
-        num_instances = self.df.shape[0]
+        num_instances = df.shape[0]
         num_categories = len(self.labels)
 
         ann1_num, ann2_num = [], []
