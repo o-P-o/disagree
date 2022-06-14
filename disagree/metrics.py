@@ -477,17 +477,3 @@ class Krippendorff():
             return 1.
 
         return 1 - (observed_disagreement / expected_disagreement)
-
-
-if __name__ == "__main__":
-
-    data = {"A": [0, 5, 7, 6, 7, 8, 6, 4, 6, 8, 7, 7, 8, 4, 8, 9, 6, 4, 4, 6, 6],
-        "B": [0, 8, 2, 6, 7, 7, 8, 2, 7, 9, 7, 6, 6, 2, 6, 6, 6, 3, 7, 9, 7],
-        "C": [0, 9, 8, 6, 9, 6, 7, 6, 8, 10, 9, 9, 9, 7, 10, 9, 9, 9, 7, 9, 9],
-        "D": [6, 6, 0, 7, 8, 7, 9, 7, 7, 7, 7, 7, 9, 8, 9, 9, 8, 3, 6, 7, 8]}
-    df2 = pd.DataFrame(data)
-
-    kripp = Krippendorff(df2)
-
-    alpha = kripp.alpha(data_type="ordinal")
-    print("Kripps alpha: {}".format(alpha))
