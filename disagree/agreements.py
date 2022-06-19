@@ -6,7 +6,7 @@ import pandas as pd
 import math
 import sys
 
-from .utils import convert_dataframe
+from utils import convert_dataframe
 
 
 DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
@@ -103,6 +103,9 @@ class BiDisagreements():
         for key1 in dict_:
             for key2 in dict_[key1]:
                 self.matrix[key1][key2] = dict_[key1][key2]
+
+    def labels_to_index(self):
+        return self.data_dict
 
     def agreements_matrix(self, normalise=False):
         """
