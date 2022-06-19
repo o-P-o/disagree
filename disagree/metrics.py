@@ -9,7 +9,7 @@ import sys
 
 from collections import Counter
 from tqdm import tqdm
-from .utils import convert_dataframe
+from utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
@@ -375,19 +375,9 @@ class Krippendorff():
         sum of rows/columns in coincidence_matrix
     """
     def __init__(self, df, use_tqdm=False):
-        converted_data = convert_dataframe(df)
-        self.df = converted_data[0]
-        self.labels = converted_data[1]
-        self.data_dict = converted_data[2]
-
-        #main_input_checks(df, labels)
-
-        #self.df = df
-        #self.labels = labels
-        self.num_anns = self.df.shape[1]
-        self.num_instances = self.df.shape[0]
-        self.A = self.df.values
-        self.A = self.A.transpose()
+        self.df, self.labels, self.data_dict = convert_dataframe(df)
+        self.num_instances, self.num_anns = self.df.shape
+        self.A = self.df.values.transpose()
         self.use_tqdm = use_tqdm
 
         self.labels_per_instance = []
@@ -425,13 +415,7 @@ class Krippendorff():
         return ((v1 - v2) / (v1 + v2)) ** 2
 
     def disagreement(self, obs_or_exp, data_type):
-        if obs_or_exp == "expected":
-            n = self.coincidence_matrix_sum
-            n_total = sum(n)
-            coeff = 1 / (n_total - 1)
-        else:
-            coeff = 1
-
+        n = self.coincidence_matrix_sum
         result = 0
         for v1 in range(1, len(self.labels)):
             for v2 in range(v1):
@@ -449,7 +433,7 @@ class Krippendorff():
                 else:
                     result += (n[v1] * n[v2] * delta)
 
-        return coeff * result
+        return result
 
     def alpha(self, data_type="nominal"):
         """
@@ -474,4 +458,6 @@ class Krippendorff():
         if expected_disagreement == 0:
             return 1.
 
-        return 1 - (observed_disagreement / expected_disagreement)
+        n_total = sum(self.coincidence_matrix_sum)
+
+        return 1. - (n_total - 1.) * (observed_disagreement / expected_disagreement)
