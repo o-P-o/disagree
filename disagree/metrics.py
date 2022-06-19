@@ -357,8 +357,6 @@ class Krippendorff():
     ----------
     df: pandas DataFrame
         rows are data instances, columns are annotator labels
-    labels: list
-        list of possible labels from 0 up
 
     Initialised
     -----------
