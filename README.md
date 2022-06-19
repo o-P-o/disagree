@@ -45,22 +45,15 @@ Worked examples are provided in the Jupyter notebooks directory.
 
 ## Documentation
 
-### **disagree.BiDisagreements(df, labels)**
+### **disagree.BiDisagreements(df)**
 
 `BiDisagreements` class is primarily there for you to visualise the disagreements in the form of a matrix, but has some other small functionalities.
-
-There are some quite strict requirements with regards to the parameters here. (See usage example in notebooks or top of source code.)
 
 * `df`: Pandas DataFrame containing annotator labels
   * ***Rows***: Instances of the data that is labelled
   * ***Columns***: Annotators
   * Element [i, j] is annotator j's label for data instance i.
-  * Entries must be integers, floats, or pandas nan values
-  * The lowest label must be 0. E.g. if your labels are 1-5, convert them to 0-4.
-
-* `labels`: list containing possible labels
-  * Must be from 0 to the maximum label. If your labels are words then please convert them to corresponding integers.
-  * Example: If the labels are [male, female, trans], you must convert to [0, 1, 2]
+  * Entries must be integers, floats, strings, or pandas nan values
 
 * **Attributes**:
   * **`agreements_summary()`**
@@ -70,11 +63,9 @@ There are some quite strict requirements with regards to the parameters here. (S
     you use something like matplotlib to visualise them properly.
     * Element $(i, j)$ is the number of times there is a bidisagreement involving label $i$ and label $j$.
 
-### **disagree.metrics.Metrics(df, labels)**
+### **disagree.metrics.Metrics(df)**
 
 This module gives you access to a number of metrics typically used for annotation disagreement statistics.
-
-See above for df and labels args.
 
 * **Attributes**:
   * **`joint_probability(ann1, ann2)`**
@@ -101,9 +92,7 @@ See above for df and labels args.
     * Parameter: func, name of function for the metric you want to visualise.
       * Options: (metrics.Metrics.cohens_kappa, metrics.Metrics.joint_probability)
 
-### **disagree.metrics.Krippendorff(df, labels)**
-
-See above for df and labels args.
+### **disagree.metrics.Krippendorff(df)**
 
 * **Attributes**
   * **`alpha(data_type="nominal")`**
