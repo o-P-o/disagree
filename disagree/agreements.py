@@ -29,9 +29,6 @@ class BiDisagreements():
         ----------
         annotator_labels: pandas dataframe, required
             Columns indexed by annotator name; rows indexed by labelled instance
-        labels: list, required
-            List of all the possible labels
-            e.g. [label1, label2, label3, ... ]
         """
         converted_data = convert_dataframe(df)
         self.df = converted_data[0]
