@@ -62,6 +62,8 @@ Worked examples are provided in the Jupyter notebooks directory.
     * This will return a matrix of bidisagreements. Do with this what you will! The intention is that
     you use something like matplotlib to visualise them properly.
     * Element $(i, j)$ is the number of times there is a bidisagreement involving label $i$ and label $j$.
+  * **`labels_to_index()`**
+    * Returns a dictionary mapping label names to indexes used in the `agreements_matrix()`.
 
 ### **disagree.metrics.Metrics(df)**
 
