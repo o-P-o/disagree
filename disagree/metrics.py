@@ -18,8 +18,6 @@ DATAFRAME_ERROR = "Data input must be a pandas DataFrame"
 ANNOTATORS_ERROR = "Invalid choice of annotators.\n Possible options: "
 KRIPP_DATA_TYPE_ERROR = """Invalid 'data_type' input.\n Possible options are
 (nominal, ordinal, interval, ratio)"""
-MATRIX_INPUT_ERROR = """Error: The func argument must take two annotators as
-arguments. You may choose joint_probability or cohens_kappa"""
 
 
 def main_input_checks(df, labels):
