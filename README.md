@@ -1,4 +1,4 @@
-![version](https://badgen.net/badge/version/1.2.7/green?icon=github)
+![version](https://badgen.net/badge/version/1.2.7/green?icon=github)![tests](https://badgen.net/badge/tests/passing/green?icon=label)
 
 # disagree - Assessing Annotator Disagreements in Python
 
