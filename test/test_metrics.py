@@ -1,8 +1,10 @@
+import sys
 import unittest
 import pandas as pd
 
-from disagree.metrics import Krippendorff
-from disagree.metrics import Metrics
+sys.path.append("..")
+from metrics import Krippendorff
+from metrics import Metrics
 
 test_annotations = {"a": [None, None, None, None, None, 2, 3, 0, 1, 0, 0, 2, 2, None, 2],
                     "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],

@@ -1,14 +1,16 @@
 import logging
 import unittest
 import sys
+
 import pandas as pd
-from disagree.agreements import BiDisagreements
+
+from .. import disagree
 
 test_annotations = {"a": [None, None, None, None, None, 1, 3, 0, 1, 0, 0, 2, 2, None, 2],
                     "b": [0, None, 1, 0, 2, 2, 3, 2, None, None, None, None, None, None, None],
                     "c": [None, None, 1, 0, 2, 3, 3, None, 1, 0, 0, 2, 2, None, 3]}
 df = pd.DataFrame(test_annotations)
-instance = BiDisagreements(df)
+instance = agreements.BiDisagreements(df, labels)
 
 
 class TestBiDisagreements(unittest.TestCase):
