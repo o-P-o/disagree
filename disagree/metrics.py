@@ -9,7 +9,7 @@ import sys
 
 from collections import Counter
 from tqdm import tqdm
-from .utils import convert_dataframe
+from utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
@@ -249,69 +249,6 @@ class Metrics():
         elif measure == "spearman":
             result = spearmanr(ann1_, ann2_)
             return (abs(result[0]), result[1])
-
-    def metric_matrix(self, func):
-        all_anns = [ann for ann in self.df.columns]
-        matrix = np.zeros((len(all_anns), len(all_anns)))
-
-        for i, ann1 in enumerate(all_anns):
-            for j, ann2 in enumerate(all_anns):
-                try:
-                    val = func(ann1, ann2)
-                    matrix[i][j] = float("{:.3f}".format(val))
-                except TypeError:
-                    print(MATRIX_INPUT_ERROR)
-                    sys.exit(1)
-
-        return matrix
-
-    def instance_degree(self, labels):
-        # bidisagreement_degree() helper function.
-        # Computes the degree for a given instance of data, input as a list of annotations
-        all_labels = set(labels)
-
-        if len(all_labels) != 2:
-            return 0
-
-        label1 = all_labels[0]
-        label2 = all_labels[1]
-
-        if labels.count(label1) > labels.count(label2):
-            looper = label1
-        else:
-            looper = label2
-
-        new_labels = [1 if i == looper else 0 for i in labels]
-        count = sum(new_labels)
-        degree = (len(labels) - count) / count
-
-        return degree
-
-    def bidisagreement_degree(self):
-        """
-        Computes the degree of bidisagreements throughout the dataset.
-        This is done by considering each bidisagreement, and assigning
-        a value to this based on how stong the bidisagreement is.
-
-        Example: For a given instance, if half of the values are different
-        then the degree is 1, and if all are the same except for one, then
-        the degree will be as close to zero as possible.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        Float
-        """
-        average_degree = 0
-        for instance in self.df.itertuples():
-            instance = list(instance)
-            degree = self.instance_degree(instance)
-            average_degree += degree
-
-        return average_degree / self.df.shape[0]
 
 def remove_nans(l):
     return [int(i) for i in l if not math.isnan(i)]
