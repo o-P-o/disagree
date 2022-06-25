@@ -1,3 +1,5 @@
+![version](https://badgen.net/badge/version/1.2.7/green?icon=github)
+
 # disagree - Assessing Annotator Disagreements in Python
 
 This library aims to address annotation disagreements in manually labelled data.
