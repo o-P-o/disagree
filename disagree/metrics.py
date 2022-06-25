@@ -9,7 +9,7 @@ import sys
 
 from collections import Counter
 from tqdm import tqdm
-from utils import convert_dataframe
+from .utils import convert_dataframe
 
 from scipy.stats import pearsonr, kendalltau, spearmanr
 
@@ -313,39 +313,19 @@ class Metrics():
 
         return average_degree / self.df.shape[0]
 
+def remove_nans(l):
+    return [int(i) for i in l if not math.isnan(i)]
+def coincidence_mat(df, labels):
+    coincidence_matrix = np.zeros((len(labels), len(labels)))
+    for row_num, labels in df.iterrows():
+        labels = remove_nans(list(labels))
+        num_annotations = len(labels)
+        perms = itertools.permutations(labels, 2)
+        for perm in perms:
+            i, j = perm[0], perm[1]
+            coincidence_matrix[i][j] += 1 / (num_annotations - 1)
 
-def main_count_(num_instances, labels_per_instance, num_anns, df_as_matrix, i, j):
-    main_count = 0
-    for k in range(num_instances):
-        count = 0
-        m = labels_per_instance[k]
-        if (m == 0 or m == 1):
-            continue
-        for perm in itertools.permutations(range(num_anns), 2):
-            b1 = int((df_as_matrix[perm[0]][k] == i))
-            b2 = int((df_as_matrix[perm[1]][k] == j))
-            count += (b1 * b2)
-        count /= (m - 1)
-        main_count += count
-    return main_count
-
-def coincidence_mat(df_as_matrix, labels, num_anns, num_instances, labels_per_instance, use_tqdm):
-    # Helper function for metrics.Krippendorff.
-    # For technical details on the coincidence matrix, see the
-    # Krippendorff's alpha Wikipedia page.
-    coincidence_mat = np.zeros((len(labels), len(labels)))
-
-    if use_tqdm:
-        loop_object = tqdm(labels)
-    else:
-        loop_object = labels
-
-    for i, label in enumerate(loop_object):
-        for j in range(len(labels)):
-            main_count = main_count_(num_instances, labels_per_instance, num_anns, df_as_matrix, i, j)
-            coincidence_mat[i][j] = main_count
-
-    return coincidence_mat
+    return coincidence_matrix
 
 
 class Krippendorff():
@@ -375,16 +355,16 @@ class Krippendorff():
         sum of rows/columns in coincidence_matrix
     """
     def __init__(self, df, use_tqdm=False):
+        df_original = df
         self.df, self.labels, self.data_dict = convert_dataframe(df)
         self.num_instances, self.num_anns = self.df.shape
         self.A = self.df.values.transpose()
         self.use_tqdm = use_tqdm
-
         self.labels_per_instance = []
         for i, row in self.df.iterrows():
             self.labels_per_instance.append(len(row) - sum(math.isnan(k) for k in row))
 
-        self.coincidence_matrix = coincidence_mat(self.A, self.labels, self.num_anns, self.num_instances, self.labels_per_instance, self.use_tqdm)
+        self.coincidence_matrix = coincidence_mat(self.df, self.labels)
         self.coincidence_matrix_sum = np.sum(self.coincidence_matrix, axis=0)
 
     def delta_nominal(self, v1, v2):
@@ -416,6 +396,7 @@ class Krippendorff():
 
     def disagreement(self, obs_or_exp, data_type):
         n = self.coincidence_matrix_sum
+
         result = 0
         for v1 in range(1, len(self.labels)):
             for v2 in range(v1):
@@ -432,7 +413,6 @@ class Krippendorff():
                     result += (self.coincidence_matrix[v1][v2] * delta)
                 else:
                     result += (n[v1] * n[v2] * delta)
-
         return result
 
     def alpha(self, data_type="nominal"):
