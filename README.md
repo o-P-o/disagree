@@ -1,4 +1,4 @@
-![version](https://badgen.net/badge/version/1.2.7/green?icon=github)![tests](https://badgen.net/badge/tests/passing/green?icon=label)
+![version](https://badgen.net/badge/version/1.2.8/green?icon=github)![tests](https://badgen.net/badge/tests/passing/green?icon=label)
 
 # disagree - Assessing Annotator Disagreements in Python
 
@@ -20,6 +20,15 @@ or
 To update to the latest version do:
 
 `$ pip3 install --upgrade disagree`
+
+## Build from source
+
+```bash
+# test first
+python -m unittest discover test
+# then build
+python setup.py sdist
+```
 
 ## Background
 

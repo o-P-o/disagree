@@ -1,8 +1,1 @@
-numpy
-pandas
-mathx
-sys
-itertools
-collections
-scipy
-tqdm
+-e .
